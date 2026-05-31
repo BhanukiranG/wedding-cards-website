@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalyanam - Premium Wedding Invitation Management</title>
+  
+  <!-- Leaflet CSS for maps -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Custom CSS for theme -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Chart.js for Analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- SheetJS for Excel export/import -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            maroon: {
+              dark: '#2A080C',
+              DEFAULT: '#4E141B',
+              light: '#70222B',
+            },
+            gold: {
+              dark: '#8C6615',
+              DEFAULT: '#D4AF37',
+              light: '#F9E79F',
+            },
+            cream: {
+              dark: '#E6DEC9',
+              DEFAULT: '#FAF6EB',
+              light: '#FDFDFB',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-parchment text-[#2A1B10] font-montserrat min-h-screen relative overflow-x-hidden">
+
+  <!-- Floating Flower Petals Container -->
+  <div id="petals-container" class="petals-container"></div>
+
+  <!-- 1. LOADING SCREEN & CINEMATIC LOGO -->
+  <div id="loading-screen" class="fixed inset-0 bg-maroon-royal z-[9999] flex flex-col items-center justify-center transition-opacity duration-1000">
+    <div class="text-center relative">
+      <!-- Rotating Gold Mandala -->
+      <div class="w-48 h-48 md:w-64 md:h-64 rounded-full border border-gold/30 flex items-center justify-center mandala-loader">
+        <svg class="w-44 h-44 md:w-56 md:h-56 text-gold opacity-80" viewBox="0 0 100 100" fill="currentColor">
+          <!-- Stylized SVG Mandala -->
+          <circle cx="50" cy="50" r="45" fill="none" stroke="#D4AF37" stroke-width="0.5" stroke-dasharray="2,2"/>
+          <path d="M50 5 C55 35, 45 35, 50 5 Z M50 95 C55 65, 45 65, 50 95 Z M5 50 C35 55, 35 45, 5 50 Z M95 50 C65 55, 65 45, 95 50 Z" />
+          <path d="M18 18 C38 38, 32 32, 18 18 Z M82 82 C62 62, 68 68, 82 82 Z M18 82 C38 62, 32 68, 18 82 Z M82 18 C62 38, 68 32, 82 18 Z" transform="rotate(45 50 50)" />
+          <circle cx="50" cy="50" r="15" fill="none" stroke="#D4AF37" stroke-width="1"/>
+          <circle cx="50" cy="50" r="5" fill="#D4AF37"/>
+        </svg>
+      </div>
+      <!-- Logo Letters inside Mandala -->
+      <div class="absolute inset-0 flex flex-col items-center justify-center mt-2">
+        <h1 class="font-vibes text-gold text-5xl md:text-6xl gold-shimmer-text">Kalyanam</h1>
+        <span class="text-gold-light font-cinzel text-xs tracking-[0.3em] uppercase">Invitation Manager</span>
+      </div>
+    </div>
+    <div class="mt-8 text-gold-light/60 font-cinzel tracking-wider text-xs animate-pulse">
+      Adorned with blessings...
+    </div>
+  </div>
+
+  <!-- 2. VINTAGE ENVELOPE INTRO VIEW -->
+  <div id="envelope-screen" class="min-h-screen bg-maroon-royal flex flex-col items-center justify-center p-4 relative z-40 hidden">
+    <!-- Royal Ornaments -->
+    <div class="ornament-corner ornament-tl"></div>
+    <div class="ornament-corner ornament-tr"></div>
+    <div class="ornament-corner ornament-bl"></div>
+    <div class="ornament-corner ornament-br"></div>
+
+    <div class="text-center mb-8 max-w-xl px-4 fade-in-up">
+      <div class="font-vibes text-gold text-4xl mb-2">Sri Rama Prasanna</div>
+      <h2 class="font-cinzel text-gold-light text-2xl md:text-3xl tracking-widest leading-relaxed">
+        ROYAL WEDDING INVITATION
+      </h2>
+      <p class="text-cream/70 font-playfair italic text-sm mt-3">
+        "Marriage is the union of two souls in sacred matrimony. We invite you to witness this auspicious journey."
+      </p>
+    </div>
+
+    <!-- 3D Envelope Wrapper -->
+    <div id="wedding-envelope" class="envelope-wrapper fade-in-up" style="animation-delay: 0.3s;">
+      <div class="envelope">
+        <!-- Top Flap -->
+        <div class="envelope-flap"></div>
+        
+        <!-- Wax Seal (Clickable to open) -->
+        <div class="wax-seal" onclick="openEnvelope()">
+          <span>S</span>
+        </div>
+        
+        <!-- Letter Card (Slides out) -->
+        <div class="letter-card bg-parchment border-2 border-double border-gold/60 flex flex-col items-center justify-between p-6">
+          <div class="w-full text-center border-b border-gold/30 pb-3">
+            <h4 class="font-cinzel text-maroon text-sm font-semibold tracking-widest">SIVARAMA & LAKSHMI</h4>
+            <p class="font-vibes text-gold-dark text-xl mt-1">Wedding Ceremony</p>
+          </div>
+          
+          <div class="text-center my-4">
+            <p class="text-xs text-maroon-light tracking-wide uppercase font-semibold">Join the Auspicious Event</p>
+            <p class="font-playfair font-semibold text-lg text-maroon-dark my-1">August 27, 2026</p>
+            <p class="text-[10px] text-gray-600">M Convention Center, Vijayawada</p>
+          </div>
+          
+          <button onclick="enterApplication()" class="w-full btn-gold text-xs py-2 px-4 rounded tracking-wider uppercase">
+            Access Dashboard
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 text-cream/40 text-[10px] font-cinzel tracking-widest uppercase animate-pulse">
+      Click Wax Seal to Break & Open
+    </div>
+  </div>
+
+  <!-- 3. AUTHENTICATION (LOGIN) PORTAL -->
+  <div id="login-screen" class="min-h-screen bg-maroon-royal flex items-center justify-center p-4 relative hidden">
+    <!-- Royal Ornaments -->
+    <div class="ornament-corner ornament-tl"></div>
+    <div class="ornament-corner ornament-tr"></div>
+    <div class="ornament-corner ornament-bl"></div>
+    <div class="ornament-corner ornament-br"></div>
+
+    <div class="w-full max-w-md bg-parchment/95 border-2 border-gold-foil p-8 rounded-lg shadow-2xl relative z-10 glass-panel">
+      <div class="text-center mb-6">
+        <h2 class="font-cinzel text-maroon-dark text-2xl font-bold tracking-wider">MANGALA LOG-IN</h2>
+        <p class="text-gold-dark font-vibes text-2xl mt-1">Welcome to Wedding Management</p>
+        <div class="w-24 h-[1px] bg-gradient-to-r from-transparent via-gold to-transparent mx-auto mt-2"></div>
+      </div>
+
+      <div id="login-error" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded text-xs mb-4">
+        Invalid credentials. Please use admin / admin.
+      </div>
+
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="mb-4">
+          <label class="block text-xs font-semibold text-maroon-dark tracking-wider uppercase mb-1">Username</label>
+          <div class="relative">
+            <input type="text" id="username" value="admin" required class="w-full pl-10 pr-3 py-2 text-sm border border-gold-dark/40 bg-cream-light/60 focus:outline-none focus:border-gold rounded font-medium text-maroon-dark">
+            <i data-lucide="user" class="absolute left-3 top-2.5 w-4.5 h-4.5 text-gold-dark/70"></i>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <label class="block text-xs font-semibold text-maroon-dark tracking-wider uppercase mb-1">Pass-code</label>
+          <div class="relative">
+            <input type="password" id="password" value="admin" required class="w-full pl-10 pr-3 py-2 text-sm border border-gold-dark/40 bg-cream-light/60 focus:outline-none focus:border-gold rounded font-medium text-maroon-dark">
+            <i data-lucide="lock" class="absolute left-3 top-2.5 w-4.5 h-4.5 text-gold-dark/70"></i>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3 btn-gold rounded text-sm uppercase tracking-widest font-cinzel">
+          Enter Auspicious Portal
+        </button>
+      </form>
+      
+      <div class="text-center mt-6 text-[10px] text-gray-500 font-cinzel">
+        Secured under familial guidance • Admin: admin / admin
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. MAIN APP DASHBOARD SHELL -->
+  <div id="main-app" class="min-h-screen flex flex-col md:flex-row hidden">
+    
+    <!-- Sidebar (Desktop) / Topbar (Mobile) -->
+    <aside class="w-full md:w-64 bg-maroon-royal border-r-2 border-gold/40 text-cream flex flex-col justify-between p-4 md:sticky md:top-0 md:h-screen z-30">
+      <div>
+        <!-- Brand/Crest Header -->
+        <div class="flex items-center space-x-3 mb-8 pb-4 border-b border-gold/20">
+          <div class="w-10 h-10 rounded-full border border-gold flex items-center justify-center bg-maroon-dark text-gold font-vibes text-2xl font-bold gold-glow">
+            K
+          </div>
+          <div>
+            <h1 class="font-cinzel text-gold text-lg tracking-widest leading-none font-bold">Kalyanam</h1>
+            <span class="text-[9px] text-gold-light/60 tracking-wider uppercase font-semibold">Royal Coordinator</span>
+          </div>
+        </div>
+
+        <!-- Navigator Links -->
+        <nav class="space-y-1">
+          <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded text-sm text-gold-light bg-maroon/50 border-l-2 border-gold transition-all">
+            <i data-lucide="layout-dashboard" class="w-4 h-4 text-gold"></i>
+            <span class="font-cinzel tracking-wider text-xs font-medium">Dashboard</span>
+          </button>
+          
+          <button onclick="switchTab('guests')" id="nav-guests" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded text-sm text-cream/70 hover:text-gold-light hover:bg-maroon/30 transition-all">
+            <i data-lucide="users" class="w-4 h-4"></i>
+            <span class="font-cinzel tracking-wider text-xs font-medium">Guest Management</span>
+          </button>
+
+          <button onclick="switchTab('locations')" id="nav-locations" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded text-sm text-cream/70 hover:text-gold-light hover:bg-maroon/30 transition-all">
+            <i data-lucide="map-pin" class="w-4 h-4"></i>
+            <span class="font-cinzel tracking-wider text-xs font-medium">Location Groups</span>
+          </button>
+
+          <button onclick="switchTab('routing')" id="nav-routing" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded text-sm text-cream/70 hover:text-gold-light hover:bg-maroon/30 transition-all">
+            <i data-lucide="navigation" class="w-4 h-4"></i>
+            <span class="font-cinzel tracking-wider text-xs font-medium">Route Planning</span>
+          </button>
+
+          <button onclick="switchTab('analytics')" id="nav-analytics" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded text-sm text-cream/70 hover:text-gold-light hover:bg-maroon/30 transition-all">
+            <i data-lucide="pie-chart" class="w-4 h-4"></i>
+            <span class="font-cinzel tracking-wider text-xs font-medium">Analytics Portal</span>
+          </button>
+
+          <button onclick="switchTab('exchange')" id="nav-exchange" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded text-sm text-cream/70 hover:text-gold-light hover:bg-maroon/30 transition-all">
+            <i data-lucide="arrow-left-right" class="w-4 h-4"></i>
+            <span class="font-cinzel tracking-wider text-xs font-medium">Import & Export</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Footer Info & User Control -->
+      <div class="mt-8 border-t border-gold/20 pt-4 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <div class="w-8 h-8 rounded-full bg-gold-dark text-maroon-dark flex items-center justify-center font-bold text-sm">
+            BP
+          </div>
+          <div>
+            <div id="user-display-name" class="text-xs font-semibold text-gold-light">Bhanu Prasad</div>
+            <div id="user-display-role" class="text-[9px] text-cream/60">Wedding Administrator</div>
+          </div>
+        </div>
+        <button onclick="handleLogout()" title="Logout" class="p-1.5 rounded hover:bg-maroon/50 text-gold hover:text-gold-light transition-all">
+          <i data-lucide="log-out" class="w-4.5 h-4.5"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col min-h-screen">
+      
+      <!-- Top header for quick search & profile (Mobile-friendly toggle) -->
+      <header class="bg-cream-light/60 backdrop-blur-md border-b border-gold-foil/30 px-6 py-4 flex items-center justify-between sticky top-0 z-20">
+        <div class="flex items-center space-x-3">
+          <button class="md:hidden p-1.5 border border-gold-dark/30 rounded bg-cream" onclick="toggleMobileSidebar()">
+            <i data-lucide="menu" class="w-5 h-5 text-maroon-dark"></i>
+          </button>
+          <h2 id="page-title" class="font-cinzel text-maroon-dark text-lg font-bold tracking-wider">Auspicious Wedding Dashboard</h2>
+        </div>
+        
+        <!-- Quick Stats Banner -->
+        <div class="flex items-center space-x-4">
+          <div class="hidden lg:flex items-center space-x-2 text-xs border border-gold/30 rounded-full px-3 py-1 bg-cream-light">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="font-semibold text-maroon">Live Coordinator Database Sync</span>
+          </div>
+          <div class="text-xs font-semibold text-maroon font-cinzel">
+            Local Time: <span id="clock-display" class="font-mono">16:38</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- App Tabs Content Panels -->
+      <div id="content-panels" class="p-4 md:p-6 flex-1 bg-parchment">
+        
+        <!-- PANEL A: DASHBOARD -->
+        <div id="panel-dashboard" class="tab-panel space-y-6">
+          <!-- Banner Hero -->
+          <div class="rounded-lg bg-maroon-royal p-6 text-cream relative overflow-hidden border-2 border-gold-foil flex flex-col md:flex-row justify-between items-center shadow-lg">
+            <div class="absolute inset-0 bg-shimmer opacity-20 pointer-events-none"></div>
+            <div class="text-center md:text-left z-10 space-y-2">
+              <h3 class="font-cinzel text-gold text-2xl md:text-3xl font-bold tracking-widest uppercase">Shubh Vivah Coordinations</h3>
+              <p class="font-playfair italic text-gold-light/80 text-sm max-w-xl">
+                Track invitation card distribution and manage guests across regions of Andhra Pradesh and Telangana. Delivering joy with traditional grace.
+              </p>
+            </div>
+            <div class="mt-4 md:mt-0 flex flex-col items-center border border-gold/40 p-3 rounded-lg bg-maroon-dark/60 backdrop-blur z-10 w-44">
+              <span class="text-[9px] uppercase tracking-widest text-gold-light font-cinzel">Overall Completion</span>
+              <span id="stat-radial-progress" class="text-3xl font-bold text-gold my-1">0%</span>
+              <div class="w-full bg-maroon-light rounded-full h-1.5">
+                <div id="stat-bar-progress" class="bg-gradient-to-r from-gold to-gold-light h-1.5 rounded-full" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Counter Cards Grid -->
+          <div class="grid grid-cols-2 lg:grid-cols-6 gap-4">
+            
+            <div class="bg-cream-light border border-gold/30 rounded-lg p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden">
+              <div class="flex items-center justify-between text-maroon">
+                <span class="text-[10px] font-cinzel tracking-wider uppercase font-semibold text-gray-500">Total Cards</span>
+                <i data-lucide="mail" class="w-4 h-4 text-gold-dark"></i>
+              </div>
+              <div class="mt-2">
+                <span id="counter-total-cards" class="text-2xl font-bold font-mono text-maroon-dark">0</span>
+                <p class="text-[9px] text-gray-500 mt-1">Printed invites</p>
+              </div>
+            </div>
+
+            <div class="bg-cream-light border border-gold/30 rounded-lg p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div class="flex items-center justify-between text-emerald-700">
+                <span class="text-[10px] font-cinzel tracking-wider uppercase font-semibold text-gray-500">Distributed</span>
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
+              </div>
+              <div class="mt-2">
+                <span id="counter-distributed" class="text-2xl font-bold font-mono text-emerald-800">0</span>
+                <p class="text-[9px] text-emerald-600/80 mt-1">Delivered successfully</p>
+              </div>
+            </div>
+
+            <div class="bg-cream-light border border-gold/30 rounded-lg p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div class="flex items-center justify-between text-amber-700">
+                <span class="text-[10px] font-cinzel tracking-wider uppercase font-semibold text-gray-500">Assigned</span>
+                <i data-lucide="truck" class="w-4 h-4 text-amber-500"></i>
+              </div>
+              <div class="mt-2">
+                <span id="counter-assigned" class="text-2xl font-bold font-mono text-amber-800">0</span>
+                <p class="text-[9px] text-amber-600/80 mt-1">With distributors</p>
+              </div>
+            </div>
+
+            <div class="bg-cream-light border border-gold/30 rounded-lg p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div class="flex items-center justify-between text-maroon-light">
+                <span class="text-[10px] font-cinzel tracking-wider uppercase font-semibold text-gray-500">Pending</span>
+                <i data-lucide="clock" class="w-4 h-4 text-maroon-light"></i>
+              </div>
+              <div class="mt-2">
+                <span id="counter-pending" class="text-2xl font-bold font-mono text-maroon">0</span>
+                <p class="text-[9px] text-maroon/70 mt-1">Unassigned invitations</p>
+              </div>
+            </div>
+
+            <div class="bg-cream-light border border-gold/30 rounded-lg p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div class="flex items-center justify-between text-[#553311]">
+                <span class="text-[10px] font-cinzel tracking-wider uppercase font-semibold text-gray-500">Total Guests</span>
+                <i data-lucide="users" class="w-4 h-4 text-[#AA7C11]"></i>
+              </div>
+              <div class="mt-2">
+                <span id="counter-total-guests" class="text-2xl font-bold font-mono text-maroon-dark">0</span>
+                <p class="text-[9px] text-gray-500 mt-1">Family heads & singles</p>
+              </div>
+            </div>
+
+            <div class="bg-cream-light border border-gold/30 rounded-lg p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div class="flex items-center justify-between text-[#113355]">
+                <span class="text-[10px] font-cinzel tracking-wider uppercase font-semibold text-gray-500">Total Areas</span>
+                <i data-lucide="map" class="w-4 h-4 text-[#115599]"></i>
+              </div>
+              <div class="mt-2">
+                <span id="counter-total-locations" class="text-2xl font-bold font-mono text-maroon-dark">0</span>
+                <p class="text-[9px] text-gray-500 mt-1">Cities & villages</p>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Bottom sections: Today's activity & distributor table -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Quick list: Distributed Today -->
+            <div class="bg-cream-light border border-gold-foil/30 rounded-lg p-5 shadow-md lg:col-span-1 flex flex-col">
+              <div class="flex items-center justify-between pb-3 border-b border-gold-dark/20 mb-4">
+                <h4 class="font-cinzel text-maroon-dark text-xs font-semibold tracking-wider">Today's Distribution Activity</h4>
+                <span id="counter-today-count" class="bg-gold/20 text-gold-dark text-[10px] px-2 py-0.5 rounded-full font-bold">0 cards</span>
+              </div>
+              <div class="flex-1 overflow-y-auto max-h-[300px]" id="dashboard-today-list">
+                <!-- Javascript will inject list of cards distributed today -->
+              </div>
+            </div>
+
+            <!-- Distributor Progress Table -->
+            <div class="bg-cream-light border border-gold-foil/30 rounded-lg p-5 shadow-md lg:col-span-2 flex flex-col">
+              <div class="pb-3 border-b border-gold-dark/20 mb-4">
+                <h4 class="font-cinzel text-maroon-dark text-xs font-semibold tracking-wider">Distributor Allocation Progress</h4>
+              </div>
+              <div class="flex-1 overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr class="border-b border-gold-dark/20 text-maroon font-cinzel font-semibold">
+                      <th class="py-2">Distributor Name</th>
+                      <th class="py-2">Role</th>
+                      <th class="py-2 text-center">Assigned Cards</th>
+                      <th class="py-2 text-center">Distributed</th>
+                      <th class="py-2 text-center">Pending</th>
+                      <th class="py-2 text-right">Work Done</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dashboard-distributors-table">
+                    <!-- Javascript will load records dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- PANEL B: GUEST MANAGEMENT -->
+        <div id="panel-guests" class="tab-panel space-y-6 hidden">
+          <!-- Control Panel (Search, Filter, Add button) -->
+          <div class="bg-cream-light border border-gold-foil/30 p-4 rounded-lg shadow flex flex-col md:flex-row md:items-center justify-between gap-4">
+            
+            <!-- Quick Search Input -->
+            <div class="flex-1 max-w-md relative">
+              <input type="text" id="guest-search-input" onkeyup="handleGuestSearch()" placeholder="Fuzzy search name, village, city, remarks..." class="w-full pl-9 pr-4 py-2 border border-gold-dark/40 rounded text-sm focus:outline-none focus:border-gold bg-cream/30 text-maroon-dark">
+              <i data-lucide="search" class="absolute left-3 top-2.5 w-4 h-4 text-gold-dark/80"></i>
+            </div>
+
+            <!-- Select Filters -->
+            <div class="flex flex-wrap items-center gap-3">
+              <select id="guest-status-filter" onchange="handleGuestSearch()" class="border border-gold-dark/40 px-3 py-2 rounded text-xs bg-cream/40 text-maroon-dark focus:outline-none focus:border-gold">
+                <option value="ALL">All Invitation Statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="Assigned">Assigned</option>
+                <option value="Distributed">Distributed</option>
+              </select>
+
+              <select id="guest-city-filter" onchange="handleGuestSearch()" class="border border-gold-dark/40 px-3 py-2 rounded text-xs bg-cream/40 text-maroon-dark focus:outline-none focus:border-gold">
+                <!-- Dynamically populated cities -->
+                <option value="ALL">All Cities</option>
+              </select>
+
+              <button onclick="openAddGuestModal()" class="btn-gold text-xs px-4 py-2 rounded flex items-center space-x-1.5">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <span class="font-cinzel tracking-wider">Add New Guest</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Main Guest Table -->
+          <div class="bg-cream-light border border-gold/30 rounded-lg shadow overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="bg-maroon/5 border-b-2 border-gold/20 text-maroon font-cinzel font-semibold uppercase tracking-wider">
+                    <th class="p-3 pl-4">Guest Info</th>
+                    <th class="p-3">Contact</th>
+                    <th class="p-3 text-center">Family Count</th>
+                    <th class="p-3">Location (Area, City)</th>
+                    <th class="p-3">Invitation Status</th>
+                    <th class="p-3">Allocation / Remarks</th>
+                    <th class="p-3 text-right pr-4">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="guests-table-body">
+                  <!-- JS injected guest records -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Empty state -->
+            <div id="guests-empty-state" class="hidden py-12 text-center text-gray-500 font-playfair italic">
+              No matching wedding guests found.
+            </div>
+
+            <!-- Count indicator -->
+            <div class="p-3 border-t border-gold/20 bg-cream/50 flex justify-between items-center text-xs text-maroon font-semibold">
+              <div>Total matches: <span id="filtered-guest-count">0</span> guests</div>
+              <div class="text-[10px] text-gray-500 font-normal">Active sync with localized data schema</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL C: LOCATION GROUPS -->
+        <div id="panel-locations" class="tab-panel space-y-6 hidden">
+          <div class="bg-cream-light border border-gold-foil/30 p-4 rounded-lg shadow">
+            <h3 class="font-cinzel text-maroon-dark text-sm font-semibold tracking-wider mb-2">Location Clustering</h3>
+            <p class="text-xs text-gray-600">
+              For ease of physical card distribution, guests are clustered by City and Village/Area below. Click a header to show or hide the guest records.
+            </p>
+          </div>
+
+          <!-- Clustering list accordions -->
+          <div class="space-y-4" id="location-clusters-accordion">
+            <!-- Dynamically generated nested locations -->
+          </div>
+        </div>
+
+        <!-- PANEL D: ROUTE PLANNING (MAPS) -->
+        <div id="panel-routing" class="tab-panel space-y-6 hidden">
+          <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            
+            <!-- Controls panel -->
+            <div class="bg-cream-light border border-gold-foil/30 p-5 rounded-lg shadow flex flex-col justify-between space-y-4 lg:col-span-1">
+              <div>
+                <h4 class="font-cinzel text-maroon-dark text-xs font-semibold tracking-wider border-b border-gold-dark/20 pb-2 mb-4">Route Planner</h4>
+                
+                <div class="space-y-4 text-xs">
+                  <!-- Select cluster/area -->
+                  <div>
+                    <label class="block text-[10px] font-cinzel font-semibold uppercase text-gray-600 mb-1">Select Distribution Area</label>
+                    <select id="route-area-selector" onchange="loadAreaOnMap()" class="w-full border border-gold-dark/40 px-3 py-2 rounded bg-cream/40 text-maroon-dark focus:outline-none">
+                      <!-- Loaded via JS -->
+                    </select>
+                  </div>
+
+                  <!-- Select distributor filter -->
+                  <div>
+                    <label class="block text-[10px] font-cinzel font-semibold uppercase text-gray-600 mb-1">Filter by Status</label>
+                    <select id="route-status-selector" onchange="loadAreaOnMap()" class="w-full border border-gold-dark/40 px-3 py-2 rounded bg-cream/40 text-maroon-dark focus:outline-none">
+                      <option value="ALL">All (Pending, Assigned, Distributed)</option>
+                      <option value="NOT_DISTRIBUTED" selected>Needs Visit (Pending & Assigned)</option>
+                      <option value="Distributed">Distributed Only</option>
+                    </select>
+                  </div>
+
+                  <!-- Route Optimizer details -->
+                  <div class="bg-maroon/5 border border-gold/20 p-3 rounded space-y-2 mt-4">
+                    <div class="font-cinzel text-[10px] font-bold text-maroon-dark">Area Statistics</div>
+                    <div class="flex justify-between">
+                      <span class="text-gray-600">Guests in Area:</span>
+                      <span id="route-stat-guests" class="font-bold text-maroon">0</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-gray-600">Family Members:</span>
+                      <span id="route-stat-family" class="font-bold text-maroon">0</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-gray-600">Estimated Distance:</span>
+                      <span id="route-stat-distance" class="font-bold text-gold-dark">0.0 km</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <button onclick="generateOptimizedRoute()" class="w-full btn-gold py-2 px-3 rounded text-xs font-cinzel tracking-wider uppercase flex items-center justify-center space-x-1.5">
+                  <i data-lucide="route" class="w-3.5 h-3.5"></i>
+                  <span>Optimize Visiting Route</span>
+                </button>
+                <p class="text-[9px] text-gray-500 text-center italic">
+                  * Calculates a traveling-salesperson route starting from the cluster centroid.
+                </p>
+              </div>
+            </div>
+
+            <!-- Leaflet Map Container -->
+            <div class="lg:col-span-3 bg-cream-light border border-gold-foil/30 rounded-lg shadow overflow-hidden flex flex-col h-[500px]">
+              <div id="routing-map" class="w-full flex-1 z-10"></div>
+              <div class="bg-cream border-t border-gold/20 p-2.5 flex flex-wrap items-center justify-between text-[10px] text-maroon-dark">
+                <div class="flex space-x-4">
+                  <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-red-600 border border-white mr-1 shadow-sm"></span> Pending Cards</span>
+                  <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-amber-500 border border-white mr-1 shadow-sm"></span> Assigned Cards</span>
+                  <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-emerald-600 border border-white mr-1 shadow-sm"></span> Distributed Cards</span>
+                </div>
+                <div>
+                  <span class="italic">Tip: Click map marker to view address details or mark as delivered.</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- PANEL E: ANALYTICS -->
+        <div id="panel-analytics" class="tab-panel space-y-6 hidden">
+          <!-- Quick summary row -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-cream-light border border-gold/30 rounded p-4 shadow-sm">
+              <span class="text-[9px] font-cinzel tracking-wider text-gray-500 uppercase">Distribution Progress</span>
+              <div id="analytics-perc" class="text-3xl font-bold font-mono text-maroon mt-1">0%</div>
+              <div class="w-full bg-gray-200 h-1.5 rounded-full mt-2">
+                <div id="analytics-bar" class="bg-gold h-1.5 rounded-full" style="width: 0%"></div>
+              </div>
+            </div>
+            <div class="bg-cream-light border border-gold/30 rounded p-4 shadow-sm">
+              <span class="text-[9px] font-cinzel tracking-wider text-gray-500 uppercase">Total Cards Printed</span>
+              <div id="analytics-total" class="text-3xl font-bold font-mono text-maroon-dark mt-1">0</div>
+              <div class="text-[10px] text-gray-500 mt-1">Invitations cataloged</div>
+            </div>
+            <div class="bg-cream-light border border-gold/30 rounded p-4 shadow-sm">
+              <span class="text-[9px] font-cinzel tracking-wider text-gray-500 uppercase">Distributed Cards</span>
+              <div id="analytics-dist" class="text-3xl font-bold font-mono text-emerald-700 mt-1">0</div>
+              <div class="text-[10px] text-emerald-600 mt-1">Delivered to guest homes</div>
+            </div>
+            <div class="bg-cream-light border border-gold/30 rounded p-4 shadow-sm">
+              <span class="text-[9px] font-cinzel tracking-wider text-gray-500 uppercase">Remaining Cards</span>
+              <div id="analytics-rem" class="text-3xl font-bold font-mono text-amber-700 mt-1">0</div>
+              <div class="text-[10px] text-amber-600 mt-1">Pending + Assigned status</div>
+            </div>
+          </div>
+
+          <!-- Charts Row -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Distribution Progress Bar Chart -->
+            <div class="bg-cream-light border border-gold-foil/30 rounded-lg p-5 shadow">
+              <h4 class="font-cinzel text-maroon-dark text-xs font-semibold tracking-wider mb-4 pb-2 border-b border-gold/20">
+                City-wise Distribution Rate
+              </h4>
+              <div class="h-[250px] relative">
+                <canvas id="chart-city-distribution"></canvas>
+              </div>
+            </div>
+
+            <!-- Location Share Pie Chart -->
+            <div class="bg-cream-light border border-gold-foil/30 rounded-lg p-5 shadow">
+              <h4 class="font-cinzel text-maroon-dark text-xs font-semibold tracking-wider mb-4 pb-2 border-b border-gold/20">
+                Guest Distribution Status Share
+              </h4>
+              <div class="h-[250px] relative flex justify-center">
+                <canvas id="chart-status-share" class="max-w-[250px]"></canvas>
+              </div>
+            </div>
+
+            <!-- Daily Activity Line Chart -->
+            <div class="bg-cream-light border border-gold-foil/30 rounded-lg p-5 shadow lg:col-span-2">
+              <h4 class="font-cinzel text-maroon-dark text-xs font-semibold tracking-wider mb-4 pb-2 border-b border-gold/20">
+                Daily Invitation Delivery Activity
+              </h4>
+              <div class="h-[280px] relative">
+                <canvas id="chart-daily-activity"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL F: IMPORT & EXPORT -->
+        <div id="panel-exchange" class="tab-panel space-y-6 hidden">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- EXCEL IMPORT CARD -->
+            <div class="bg-cream-light border border-gold-foil/30 p-6 rounded-lg shadow-md flex flex-col justify-between h-[300px]">
+              <div>
+                <div class="flex items-center space-x-2 text-maroon-dark border-b border-gold-dark/20 pb-2 mb-4">
+                  <i data-lucide="file-up" class="w-5 h-5 text-gold-dark"></i>
+                  <h4 class="font-cinzel text-xs font-semibold tracking-wider">Import Guest List (Excel/CSV)</h4>
+                </div>
+                <p class="text-xs text-gray-600 mb-4">
+                  Import guest records in bulk from an Excel Spreadsheet or CSV. The file must contain headers: 
+                  <code class="bg-cream px-1 py-0.5 rounded font-mono text-[10px] text-maroon">Name, Mobile, FamilyCount, Village, City, Address</code>.
+                </p>
+                <div class="border-2 border-dashed border-gold-dark/30 rounded-lg p-6 bg-cream/20 flex flex-col items-center justify-center cursor-pointer hover:bg-cream/40 transition-colors" onclick="triggerFileInput()">
+                  <i data-lucide="upload-cloud" class="w-8 h-8 text-gold-dark mb-2 animate-bounce"></i>
+                  <span class="text-xs font-semibold text-maroon">Select Excel Spreadsheet (.xlsx, .xls)</span>
+                  <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleExcelImport(event)">
+                </div>
+              </div>
+              <div id="import-status-msg" class="text-xs font-semibold text-center italic text-gold-dark"></div>
+            </div>
+
+            <!-- EXCEL EXPORT CARD -->
+            <div class="bg-cream-light border border-gold-foil/30 p-6 rounded-lg shadow-md flex flex-col justify-between h-[300px]">
+              <div>
+                <div class="flex items-center space-x-2 text-maroon-dark border-b border-gold-dark/20 pb-2 mb-4">
+                  <i data-lucide="file-down" class="w-5 h-5 text-gold-dark"></i>
+                  <h4 class="font-cinzel text-xs font-semibold tracking-wider">Export Guest Registry</h4>
+                </div>
+                <p class="text-xs text-gray-600 mb-6">
+                  Download the complete live registry of guests, coordinate delivery status, remarks, and maps coordinates in a fully formatted Excel file. Excellent for printing physical distribution log sheets.
+                </p>
+                
+                <div class="space-y-3">
+                  <button onclick="exportGuestList('ALL')" class="w-full btn-gold py-2.5 rounded text-xs font-cinzel tracking-wider uppercase flex items-center justify-center space-x-2">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    <span>Export Entire Guest List</span>
+                  </button>
+                  <button onclick="exportGuestList('Distributed')" class="w-full border border-gold-dark/60 text-maroon-dark py-2.5 rounded text-xs font-cinzel tracking-wider uppercase hover:bg-cream-dark/20 transition-colors flex items-center justify-center space-x-2">
+                    <i data-lucide="check-square" class="w-4 h-4 text-emerald-600"></i>
+                    <span>Export Distributed Only</span>
+                  </button>
+                </div>
+              </div>
+              <div class="text-[9px] text-gray-500 text-center">
+                Powered by SheetJS • Compatible with Microsoft Excel, Google Sheets, and Numbers.
+              </div>
+            </div>
+
+            <!-- WIPE / RELOAD CARD -->
+            <div class="bg-cream-light border border-gold-foil/30 p-6 rounded-lg shadow-md flex flex-col justify-between h-[300px]">
+              <div>
+                <div class="flex items-center space-x-2 text-maroon-dark border-b border-gold-dark/20 pb-2 mb-4">
+                  <i data-lucide="trash-2" class="w-5 h-5 text-red-600"></i>
+                  <h4 class="font-cinzel text-xs font-semibold tracking-wider text-red-700">Wipe Registry / Fresh Start</h4>
+                </div>
+                <p class="text-xs text-gray-600 mb-5">
+                  Wipe all current guest records (remove the Telugu dummy data) to start with a clean registry. This will allow you to import your own Excel sheet or add real guests from scratch.
+                </p>
+                
+                <div class="space-y-3">
+                  <button onclick="wipeDatabase()" class="w-full bg-red-600 text-white hover:bg-red-700 py-2.5 rounded text-xs font-cinzel tracking-wider uppercase flex items-center justify-center space-x-2 transition-colors">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    <span>Wipe All Dummy Data</span>
+                  </button>
+                  <button onclick="reloadDummyData()" class="w-full border border-gold-dark/60 text-maroon-dark py-2.5 rounded text-xs font-cinzel tracking-wider uppercase hover:bg-cream-dark/20 transition-colors flex items-center justify-center space-x-2">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4 text-gold-dark"></i>
+                    <span>Reload Sample Dummy Data</span>
+                  </button>
+                </div>
+              </div>
+              <div class="text-[9px] text-red-600/70 text-center font-semibold">
+                * Note: Wiping registry is irreversible!
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- 5. ADD / EDIT GUEST MODAL -->
+  <div id="guest-modal" class="fixed inset-0 bg-maroon-dark/60 backdrop-blur-sm z-[999] hidden flex items-center justify-center p-4">
+    <div class="w-full max-w-2xl bg-parchment border-2 border-gold-foil rounded-lg shadow-2xl overflow-hidden glass-panel flex flex-col max-h-[90vh]">
+      
+      <!-- Modal Header -->
+      <div class="bg-maroon-royal text-cream px-6 py-4 flex items-center justify-between border-b border-gold/30">
+        <div class="flex items-center space-x-2">
+          <div class="w-2.5 h-2.5 rounded-full bg-gold animate-pulse"></div>
+          <h3 id="modal-title" class="font-cinzel text-gold text-sm font-semibold tracking-wider">Add Auspicious Guest</h3>
+        </div>
+        <button onclick="closeGuestModal()" class="text-gold hover:text-gold-light transition-all">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable form) -->
+      <div class="p-6 overflow-y-auto flex-1">
+        <form id="guest-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <input type="hidden" id="modal-guest-id">
+          
+          <div class="md:col-span-2">
+            <label class="block font-cinzel font-semibold text-maroon-dark mb-1">GUEST NAME <span class="text-red-500">*</span></label>
+            <input type="text" id="modal-guest-name" required placeholder="Sri / Smt / Kum..." class="w-full p-2 border border-gold-dark/40 bg-cream/30 rounded focus:outline-none focus:border-gold text-maroon-dark font-medium">
+          </div>
+
+          <div>
+            <label class="block font-cinzel font-semibold text-maroon-dark mb-1">MOBILE NUMBER <span class="text-red-500">*</span></label>
+            <input type="tel" id="modal-guest-mobile" required placeholder="e.g. 9848022338" class="w-full p-2 border border-gold-dark/40 bg-cream/30 rounded focus:outline-none focus:border-gold text-maroon-dark font-medium">
+          </div>
+
+          <div>
+            <label class="block font-cinzel font-semibold text-maroon-dark mb-1">FAMILY MEMBERS COUNT</label>
+            <input type="number" id="modal-guest-family" min="1" value="1" class="w-full p-2 border border-gold-dark/40 bg-cream/30 rounded focus:outline-none focus:border-gold text-maroon-dark font-medium">
+          </div>
+
+          <div>
+            <label class="block font-cinzel font-semibold text-maroon-dark mb-1">VILLAGE / LOCAL AREA <span class="text-red-500">*</span></label>
+            <input type="text" id="modal-guest-village" required placeholder="e.g. Madhapur" class="w-full p-2 border border-gold-dark/40 bg-cream/30 rounded focus:outline-none focus:border-gold text-maroon-dark font-medium">
+          </div>
+
+          <div>
+            <label class="block font-cinzel font-semibold text-maroon-dark mb-1">CITY <span class="text-red-500">*</span></label>
+            <input type="text" id="modal-guest-city" required placeholder="e.g. Hyderabad" class="w-full p-2 border border-gold-dark/40 bg-cream/30 rounded focus:outline-none focus:border-gold text-maroon-dark font-medium">
+          </div>
+
+          <div>
+            <label class="block font-cinzel font-semibold text-maroon-dark mb-1">STATE</label>
+            <input type="text" id="modal-guest-state" value="Andhra Pradesh" class="w-full p-2 border border-gold-dark/40 bg-cream/30 rounded focus:outline-none focus:border-gold text-maroon-dark font-medium">
+          </div>
+
+          <div>
+            <label class="block font-cinzel font-semibold text-maroon-dark mb-1">INVITEE STATUS</label>
+            <select id="modal-guest-status" onchange="toggleModalFields()" class="w-full p-2 border border-gold-dark/40 bg-cream/30 rounded focus:outline-none focus:border-gold text-maroon-dark font-medium">
+              <option value="Pending">Pending</option>
+              <option value="Assigned">Assigned</option>
+              <option value="Distributed">Distributed</option>
+            </select>
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block font-cinzel font-semibold text-maroon-dark mb-1">FULL HOME ADDRESS <span class="text-red-500">*</span></label>
+            <textarea id="modal-guest-address" required rows="2" placeholder="Complete address for distribution team..." class="w-full p-2 border border-gold-dark/40 bg-cream/30 rounded focus:outline-none focus:border-gold text-maroon-dark font-medium"></textarea>
+          </div>
+
+          <!-- Latitude/Longitude Coordinates -->
+          <div>
+            <label class="block font-cinzel font-semibold text-maroon-dark mb-1">MAPS LATITUDE (Auto-calc fallback)</label>
+            <input type="number" id="modal-guest-lat" step="any" class="w-full p-2 border border-gold-dark/40 bg-cream/30 rounded focus:outline-none focus:border-gold text-maroon-dark font-medium">
+          </div>
+
+          <div>
+            <label class="block font-cinzel font-semibold text-maroon-dark mb-1">MAPS LONGITUDE (Auto-calc fallback)</label>
+            <input type="number" id="modal-guest-lng" step="any" class="w-full p-2 border border-gold-dark/40 bg-cream/30 rounded focus:outline-none focus:border-gold text-maroon-dark font-medium">
+          </div>
+
+          <!-- Fields shown only if Status is Assigned or Distributed -->
+          <div id="modal-field-assigned-to" class="hidden">
+            <label class="block font-cinzel font-semibold text-maroon-dark mb-1">ASSIGNED DISTRIBUTOR</label>
+            <select id="modal-guest-assigned" class="w-full p-2 border border-gold-dark/40 bg-cream/30 rounded focus:outline-none focus:border-gold text-maroon-dark font-medium">
+              <option value="">Choose distributor...</option>
+              <!-- Populated via JS -->
+            </select>
+          </div>
+
+          <div id="modal-field-remarks" class="hidden">
+            <label class="block font-cinzel font-semibold text-maroon-dark mb-1">DISTRIBUTION REMARKS</label>
+            <input type="text" id="modal-guest-remarks" placeholder="Notes during delivery..." class="w-full p-2 border border-gold-dark/40 bg-cream/30 rounded focus:outline-none focus:border-gold text-maroon-dark font-medium">
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block font-cinzel font-semibold text-maroon-dark mb-1">SPECIAL NOTES</label>
+            <input type="text" id="modal-guest-notes" placeholder="VIP boxes, sweet packs, specific delivery date constraints..." class="w-full p-2 border border-gold-dark/40 bg-cream/30 rounded focus:outline-none focus:border-gold text-maroon-dark font-medium">
+          </div>
+        </form>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="bg-cream border-t border-gold/20 px-6 py-4 flex justify-between items-center">
+        <div class="text-[10px] text-gray-500">* Required fields</div>
+        <div class="flex space-x-2">
+          <button onclick="closeGuestModal()" class="border border-gold-dark/60 text-maroon-dark px-4 py-2 rounded font-cinzel tracking-wider uppercase hover:bg-cream-dark/20 transition-colors">
+            Cancel
+          </button>
+          <button onclick="saveGuestForm(event)" class="btn-gold px-5 py-2 rounded font-cinzel tracking-wider uppercase">
+            Record Registry
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Leaflet Javascript Library -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <!-- App JS Scripts -->
+  <script src="mock_data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

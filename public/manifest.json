@@ -1,0 +1,23 @@
+{
+  "name": "Kalyanam Wedding Cards Distribution",
+  "short_name": "Kalyanam",
+  "description": "Premium Wedding Invitation Cards Tracking and Route Optimizer.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#2A080C",
+  "theme_color": "#D4AF37",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='50' cy='50' r='50' fill='%232A080C'/%3E%3Ctext x='50' y='65' font-size='40' font-family='cursive' fill='%23D4AF37' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='50' cy='50' r='50' fill='%232A080C'/%3E%3Ctext x='50' y='65' font-size='40' font-family='cursive' fill='%23D4AF37' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
