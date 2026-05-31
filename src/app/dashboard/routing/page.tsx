@@ -38,7 +38,6 @@ export default function RoutePlanning() {
 
     const initMap = async () => {
       const L = (await import("leaflet")).default;
-      await import("leaflet/dist/leaflet.css");
 
       if (!mapRef.current && mapContainerRef.current) {
         mapRef.current = L.map(mapContainerRef.current).setView([16.5062, 80.6480], 12);

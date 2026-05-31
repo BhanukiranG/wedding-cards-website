@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cinzel_Decorative, Playfair_Display, Great_Vibes, Montserrat } from "next/font/google";
+import "leaflet/dist/leaflet.css";
 import "./globals.css";
 
 const cinzel = Cinzel_Decorative({
