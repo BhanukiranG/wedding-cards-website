@@ -6,12 +6,11 @@ import { Mail, CheckCircle2, Truck, Clock, Users, Map } from "lucide-react";
 import SkeletonCard from "@/components/SkeletonCard";
 
 export default function DashboardHome() {
-  const { guests, users, loading, fetchGuests, fetchUsers } = useWeddingStore();
+  const { guests, loading, fetchGuests } = useWeddingStore();
 
   useEffect(() => {
     fetchGuests();
-    fetchUsers();
-  }, [fetchGuests, fetchUsers]);
+  }, [fetchGuests]);
 
   // Calculations
   const totalCards = guests.length;
@@ -96,7 +95,7 @@ export default function DashboardHome() {
       </div>
 
       {/* Bottom sections */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         
         {/* Deliveries Feed */}
         <div className="bg-cream-light border border-gold-foil/30 rounded-lg p-5 shadow flex flex-col h-[400px]">
@@ -118,53 +117,6 @@ export default function DashboardHome() {
                   </div>
                 </div>
               ))
-            )}
-          </div>
-        </div>
-
-        {/* Distributor Standings */}
-        <div className="bg-cream-light border border-gold-foil/30 rounded-lg p-5 shadow lg:col-span-2 flex flex-col h-[400px]">
-          <div className="pb-3 border-b border-gold-dark/20 mb-4">
-            <h4 className="font-cinzel text-maroon-dark text-xs font-semibold tracking-wider">Distributor Allocation Progress</h4>
-          </div>
-          <div className="flex-1 overflow-x-auto">
-            {users.length <= 1 ? (
-              <div className="text-gray-500 text-xs italic text-center py-12">
-                No helper distributors registered. Go to authentication and add distributor roles to populate this dashboard.
-              </div>
-            ) : (
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="border-b border-gold-dark/20 text-maroon font-cinzel font-semibold">
-                    <th className="py-2">Distributor Name</th>
-                    <th className="py-2">Role</th>
-                    <th className="py-2 text-center">Assigned Cards</th>
-                    <th className="py-2 text-center">Distributed</th>
-                    <th className="py-2 text-right">Work Done</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.filter(u => u.role === "Distributor").map((u) => {
-                    // Placeholder metrics for production data bindings
-                    return (
-                      <tr key={u.id} className="border-b border-gold-dark/10 hover:bg-cream-dark/10">
-                        <td className="py-2.5 font-semibold text-maroon-dark">{u.name}</td>
-                        <td className="py-2.5 text-gray-600">{u.role}</td>
-                        <td className="py-2.5 text-center font-bold">0</td>
-                        <td className="py-2.5 text-center text-emerald-700 font-bold">0</td>
-                        <td className="py-2.5 text-right font-semibold text-gold-dark">
-                          <div className="inline-flex items-center space-x-1">
-                            <span>0%</span>
-                            <div className="w-10 bg-gray-200 h-1 rounded-full overflow-hidden">
-                              <div className="bg-gold h-full" style={{ width: `0%` }}></div>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
             )}
           </div>
         </div>
