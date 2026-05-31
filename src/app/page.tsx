@@ -146,7 +146,7 @@ export default function Home() {
             <div>
               <div className="flex justify-between items-center mb-1">
                 <label className="block text-xs font-semibold text-maroon-dark tracking-wider uppercase">Pass-code</label>
-                <Link href="/forgot-password" class="text-[10px] text-maroon hover:text-gold-dark font-semibold">
+                <Link href="/forgot-password" className="text-[10px] text-maroon hover:text-gold-dark font-semibold">
                   Forgot Password?
                 </Link>
               </div>

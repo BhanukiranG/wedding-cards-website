@@ -277,9 +277,9 @@ export default function RoutePlanning() {
         <div ref={mapContainerRef} className="w-full flex-1 z-10"></div>
         <div className="bg-cream border-t border-gold/20 p-2.5 flex flex-wrap items-center justify-between text-[10px] text-maroon-dark">
           <div className="flex space-x-4">
-            <span className="flex items-center"><span class="w-3 h-3 rounded-full bg-red-600 border border-white mr-1 shadow"></span> Pending</span>
-            <span className="flex items-center"><span class="w-3 h-3 rounded-full bg-amber-500 border border-white mr-1 shadow"></span> Assigned</span>
-            <span className="flex items-center"><span class="w-3 h-3 rounded-full bg-emerald-600 border border-white mr-1 shadow"></span> Distributed</span>
+            <span className="flex items-center"><span className="w-3 h-3 rounded-full bg-red-600 border border-white mr-1 shadow"></span> Pending</span>
+            <span className="flex items-center"><span className="w-3 h-3 rounded-full bg-amber-500 border border-white mr-1 shadow"></span> Assigned</span>
+            <span className="flex items-center"><span className="w-3 h-3 rounded-full bg-emerald-600 border border-white mr-1 shadow"></span> Distributed</span>
           </div>
           <div>
             <span className="italic">Tip: Tap marker to see address and log status.</span>
