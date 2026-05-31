@@ -10,11 +10,12 @@ export interface Guest {
   city: string;
   state: string;
   pincode: string;
-  latitude: number | null;
-  longitude: number | null;
-  notes: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  notes?: string;
   status: "Pending" | "Assigned" | "Distributed";
   created_at: string;
+  familyMembers?: number;
 }
 
 export interface User {

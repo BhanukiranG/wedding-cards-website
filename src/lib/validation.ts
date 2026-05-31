@@ -44,3 +44,5 @@ export const userRegistrationSchema = z.object({
 export type GuestFormData = z.infer<typeof guestSchema>;
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegistrationFormData = z.infer<typeof userRegistrationSchema>;
+export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
